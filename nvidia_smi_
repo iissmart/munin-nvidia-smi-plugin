@@ -86,9 +86,9 @@ fi
 # Get number of GPUs
 nGpusOutput=$("$nvSmiExec" -L)
 nGpus=$(echo "$nGpusOutput" | wc -l)
-if [ "$nGpus" -neq 1 ]; then
-	# Exit if not exactly 1 GPU found
-	echo "This plugin only supports one GPU. Exiting."
+if [ "$nGpus" -eq 0 ]; then
+	# Exit if no GPUs found
+	echo "No NVIDIA GPUs detected. Exiting."
 	exit 1
 fi
 
@@ -109,11 +109,15 @@ if [ "$1" = "config" ]; then
 			echo 'graph_vlabel degrees Celsius'
 			echo 'graph_category sensors'
 			echo "graph_info Temperature information for NVIDIA GPUs using driver version $driverVersion"
-
-			gpuName=$(echo "$nGpusOutput" | cut -d \( -f 1)
-			echo "${name}.warning ${warning:-91}"
-			echo "${name}.critical ${critical:-94}"
-			echo "${name}.info Temperature information for $gpuName"
+			nGpusCounter=0
+			while [ $nGpusCounter -lt "$nGpus" ]
+			do
+				gpuName=$(echo "$nGpusOutput" | sed -n $((nGpusCounter+1))p | cut -d \( -f 1)
+				echo "${name}${nGpusCounter}.warning ${warning:-91}"
+				echo "${name}${nGpusCounter}.critical ${critical:-94}"
+				echo "${name}${nGpusCounter}.info Temperature information for $gpuName"
+				: $((nGpusCounter=nGpusCounter+1))
+			done
 			;;
 		mem)
 			# First determine total memory of each GPU...
