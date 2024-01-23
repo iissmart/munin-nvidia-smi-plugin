@@ -113,8 +113,8 @@ if [ "$1" = "config" ]; then
 			while [ $nGpusCounter -lt "$nGpus" ]
 			do
 				gpuName=$(echo "$nGpusOutput" | sed -n $((nGpusCounter+1))p | cut -d \( -f 1)
-				echo "${name}${nGpusCounter}.warning ${warning:-75}"
-				echo "${name}${nGpusCounter}.critical ${critical:-95}"
+				echo "${name}${nGpusCounter}.warning ${warning:-91}"
+				echo "${name}${nGpusCounter}.critical ${critical:-94}"
 				echo "${name}${nGpusCounter}.info Temperature information for $gpuName"
 				: $((nGpusCounter=nGpusCounter+1))
 			done
@@ -218,7 +218,10 @@ if [ "$1" = "config" ]; then
 			while [ $nGpusCounter -lt "$nGpus" ]
 			do
 				gpuName=$(echo "$nGpusOutput" | sed -n $((nGpusCounter+1))p | cut -d \( -f 1)
-				echo "${name}${nGpusCounter}.info Volatile Single Bit ECC Errors of $gpuName"
+				echo "${name}${nGpusCounter}.vsb.info Volatile Single Bit ECC Errors of $gpuName"
+				echo "${name}${nGpusCounter}.vdb.info Volatile Double Bit ECC Errors of $gpuName"
+				echo "${name}${nGpusCounter}.asb.info Aggregate Single Bit ECC Errors of $gpuName"
+				echo "${name}${nGpusCounter}.adb.info Aggregate Double Bit ECC Errors of $gpuName"
 				: $((nGpusCounter=nGpusCounter+1))
 				done
 			;;
