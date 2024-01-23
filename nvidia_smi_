@@ -209,6 +209,19 @@ if [ "$1" = "config" ]; then
 				: $((nGpusCounter=nGpusCounter+1))
 				done
 			;;
+		ecc)
+			echo 'graph_title GPU ECC Statistics'
+			echo 'graph_vlabel Errors'
+			echo 'graph_category memory'
+			echo "graph_info ECC Statistics of NVIDIA GPUs using driver version $driverVersion"
+			nGpusCounter=0
+			while [ $nGpusCounter -lt "$nGpus" ]
+			do
+				gpuName=$(echo "$nGpusOutput" | sed -n $((nGpusCounter+1))p | cut -d \( -f 1)
+				echo "${name}${nGpusCounter}.info Volatile Single Bit ECC Errors of $gpuName"
+				: $((nGpusCounter=nGpusCounter+1))
+				done
+			;;
 		*)
 			echo "Can't run without a proper symlink. Exiting."
 			echo "Try running munin-node-configure --suggest."
