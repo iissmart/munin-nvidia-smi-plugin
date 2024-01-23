@@ -72,7 +72,8 @@ fi
 # Check if suggest was requested
 if [ "$1" = "suggest" ]; then
 	echo "temp"
-	echo "mem"
+	echo "mem_fb"
+	echo "mem_bar"
 	echo "fan"
 	echo "power"
 	echo "utilization"
@@ -119,7 +120,7 @@ if [ "$1" = "config" ]; then
 				: $((nGpusCounter=nGpusCounter+1))
 			done
 			;;
-		mem)
+		mem_fb)
 			# First determine total memory of each GPU...
 			gpusTotalMemOutput=$(echo "$smiOutput" | grep -v BAR1 | grep -A 3 "Memory Usage" | grep "Total" | cut -d : -f 2 | tr -d ' ')
 			gpusTotalMem=''
@@ -251,7 +252,7 @@ case $name in
 	temp)
 		valueGpus=$(echo "$smiOutput" | grep "GPU Current Temp" | cut -d : -f 2 | cut -d ' ' -f 2)
 		;;
-	mem)
+	mem_fb)
 		totalMemGpus=$(echo "$smiOutput" | grep -v BAR1 | grep -A 3 "Memory Usage" | grep "Total" | cut -d : -f 2 | cut -d ' ' -f 2)
 		usedMemGpus=$(echo "$smiOutput" | grep -v BAR1 | grep -A 3 "Memory Usage" | grep "Used" | cut -d : -f 2 | cut -d ' ' -f 2)
 		valueGpus=''
