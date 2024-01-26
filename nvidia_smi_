@@ -188,15 +188,10 @@ if [ "$1" = "config" ]; then
 			echo 'graph_vlabel degrees Celsius'
 			echo 'graph_category sensors'
 			echo "graph_info Temperature information for NVIDIA GPUs using driver version $driverVersion"
-			nGpusCounter=0
-			while [ $nGpusCounter -lt "$nGpus" ]
-			do
-				gpuName=$(echo "$nGpusOutput" | sed -n $((nGpusCounter+1))p | cut -d \( -f 1)
-				echo "${name}${nGpusCounter}.warning ${warning:-91}"
-				echo "${name}${nGpusCounter}.critical ${critical:-94}"
-				echo "${name}${nGpusCounter}.info Temperature information for $gpuName"
-				: $((nGpusCounter=nGpusCounter+1))
-			done
+
+			echo "temp.warning ${warning:-91}"
+			echo "temp.critical ${critical:-94}"
+			echo "temp.info Temperature information for $gpuName"
 			;;
 		mem_fb)
 			# First determine total memory of each GPU...
