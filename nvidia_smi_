@@ -49,20 +49,6 @@ klink@numberzero.org
  #%# family=auto
  #%# capabilities=autoconf suggest
 
- GPU 00000000:17:00.0
-    PCI
-        GPU Link Info
-            PCIe Generation
-                Max                       : 3
-                Current                   : 3
-                Device Current            : 3
-                Device Max                : 3
-                Host Max                  : 3
-            Link Width
-                Max                       : 16x
-                Current                   : 16x
-        Replays Since Reset               : 0
-        Replay Number Rollovers           : 0
         Tx Throughput                     : 0 KB/s
         Rx Throughput                     : 0 KB/s
     Fan Speed                             : N/A
@@ -190,8 +176,9 @@ smiOutput=$("$nvSmiExec" -q)
 # Check if config was requested
 if [ "$1" = "config" ]; then
 
-	# Get driver version
+	# Get common info
 	driverVersion=$(echo "$smiOutput" | grep "Driver Version" | cut -d : -f 2 | tr -d ' ')
+	gpuName=$(echo "$nGpusOutput" | sed -n $((nGpusCounter+1))p | cut -d '(' -f 1)
 
 	# Configure graph depending on what which quantity will be plotted
 	case $name in
@@ -271,29 +258,21 @@ if [ "$1" = "config" ]; then
 			;;
 		rx)
 			echo 'graph_title GPU Rx Throughput'
-			echo 'graph_vlabel Bits/sec'
+			echo 'graph_vlabel KB/sec'
 			echo 'graph_category system'
 			echo "graph_info Rx Throughput of NVIDIA GPUs using driver version $driverVersion"
-			nGpusCounter=0
-			while [ $nGpusCounter -lt "$nGpus" ]
-			do
-				gpuName=$(echo "$nGpusOutput" | sed -n $((nGpusCounter+1))p | cut -d \( -f 1)
-				echo "${name}${nGpusCounter}.info Rx Throughput of $gpuName"
-				: $((nGpusCounter=nGpusCounter+1))
-				done
+
+			echo "rx.label Rx Throughput"
+			echo "rx.info Rx Throughput of $gpuName"
 			;;
 		tx)
 			echo 'graph_title GPU Tx Throughput'
-			echo 'graph_vlabel Bits/sec'
+			echo 'graph_vlabel KB/sec'
 			echo 'graph_category system'
 			echo "graph_info Tx Throughput of NVIDIA GPUs using driver version $driverVersion"
-			nGpusCounter=0
-			while [ $nGpusCounter -lt "$nGpus" ]
-			do
-				gpuName=$(echo "$nGpusOutput" | sed -n $((nGpusCounter+1))p | cut -d \( -f 1)
-				echo "${name}${nGpusCounter}.info Tx Throughput of $gpuName"
-				: $((nGpusCounter=nGpusCounter+1))
-				done
+
+			echo "tx.label Tx Throughput"
+			echo "tx.info Tx Throughput of $gpuName"
 			;;
 		ecc)
 			echo 'graph_title GPU ECC Statistics'
@@ -317,8 +296,6 @@ if [ "$1" = "config" ]; then
 			echo 'graph_category system'
 			echo "graph_info PCIe Generation of NVIDIA GPUs using driver version $driverVersion"
 
-			gpuName=$(echo "$nGpusOutput" | sed -n $((nGpusCounter+1))p | cut -d \( -f 1)
-			
 			echo "max.label PCIe Gen Max"
 			echo "max.info PCIe Max of $gpuName"
 
@@ -380,27 +357,11 @@ case $name in
 		;;
 	rx)
 		rxGpus=$(echo "$smiOutput" | grep "Rx Throughput" | cut -d ':' -f 2 | cut -d ' ' -f 2)
-		valueGpus=''
-		nGpusCounter=0
-		while [ $nGpusCounter -lt "$nGpus" ]
-		do
-			kiloBitsPerSecond=$(echo "$rxGpus" | sed -n $((nGpusCounter+1))p)
-			bitsPerSecond=$((kiloBitsPerSecond*1024))
-			valueGpus="${valueGpus}${bitsPerSecond}"$'\n'
-			: $((nGpusCounter=nGpusCounter+1))
-		done
+		echo "rx.value ${rxGpus}"
 		;;
 	tx)
 		txGpus=$(echo "$smiOutput" | grep "Tx Throughput" | cut -d ':' -f 2 | cut -d ' ' -f 2)
-		valueGpus=''
-		nGpusCounter=0
-		while [ $nGpusCounter -lt "$nGpus" ]
-		do
-			kiloBitsPerSecond=$(echo "$txGpus" | sed -n $((nGpusCounter+1))p)
-			bitsPerSecond=$((kiloBitsPerSecond*1024))
-			valueGpus="${valueGpus}${bitsPerSecond}"$'\n'
-			: $((nGpusCounter=nGpusCounter+1))
-		done
+		echo "tx.value ${txGpus}"
 		;;
 	ecc)
 		txGpus=$(echo "$smiOutput" | grep "Tx Throughput" | cut -d ':' -f 2 | cut -d ' ' -f 2)
