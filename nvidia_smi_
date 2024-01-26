@@ -417,27 +417,21 @@ case $name in
 		;;
 	pcie)
 		pcieGen=$(echo "$smiOutput" | grep -A 8 "PCIe Generation")
-		valueGpus=''
-		nGpusCounter=0
-		while [ $nGpusCounter -lt "$nGpus" ]
-		do
-			max=$(echo "$pcieGen" | grep "Max" | head -n 1 | cut -d ':' -f 2 | cut -d ' ' -f 2)
-			valueGpus="${valueGpus}${max}"$'\n'
 
-			current=$(echo "$pcieGen" | grep "Current" | head -n 1 | cut -d ':' -f 2 | cut -d ' ' -f 2)
-			valueGpus="${valueGpus}${current}"$'\n'
+		max=$(echo "$pcieGen" | grep "Max" | head -n 1 | cut -d ':' -f 2 | cut -d ' ' -f 2)
+		echo "max.value ${max}"$'\n'
 
-			device_current=$(echo "$pcieGen" | grep "Device Current" | cut -d ':' -f 2 | cut -d ' ' -f 2)
-			valueGpus="${valueGpus}${device_current}"$'\n'
+		current=$(echo "$pcieGen" | grep "Current" | head -n 1 | cut -d ':' -f 2 | cut -d ' ' -f 2)
+		echo "current.value ${current}"$'\n'
 
-			device_max=$(echo "$pcieGen" | grep "Device Max" | cut -d ':' -f 2 | cut -d ' ' -f 2)
-			valueGpus="${valueGpus}${device_max}"$'\n'
+		device_current=$(echo "$pcieGen" | grep "Device Current" | cut -d ':' -f 2 | cut -d ' ' -f 2)
+		echo "device_current.value ${device_current}"$'\n'
 
-			host_max=$(echo "$pcieGen" | grep "Host Max" | cut -d ':' -f 2 | cut -d ' ' -f 2)
-			valueGpus="${valueGpus}${host_max}"$'\n'
+		device_max=$(echo "$pcieGen" | grep "Device Max" | cut -d ':' -f 2 | cut -d ' ' -f 2)
+		echo "device_max.value ${device_max}"$'\n'
 
-			: $((nGpusCounter=nGpusCounter+1))
-		done
+		host_max=$(echo "$pcieGen" | grep "Host Max" | cut -d ':' -f 2 | cut -d ' ' -f 2)
+		echo "host_max.value ${host_max}"$'\n'
 		;;
 	*)
 		echo "Can't run without a proper symlink. Exiting."
