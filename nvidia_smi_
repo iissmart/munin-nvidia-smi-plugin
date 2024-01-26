@@ -187,6 +187,7 @@ if [ "$1" = "config" ]; then
 			echo 'graph_category sensors'
 			echo "graph_info Temperature information for NVIDIA GPUs using driver version $driverVersion"
 
+			echo "temp.label Temperature"
 			echo "temp.warning ${warning:-91}"
 			echo "temp.critical ${critical:-94}"
 			echo "temp.info Temperature information for $gpuName"
