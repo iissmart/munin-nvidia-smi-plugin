@@ -305,7 +305,8 @@ fi
 # Get requested value
 case $name in
 	temp)
-		valueGpus=$(echo "$smiOutput" | grep "GPU Current Temp" | cut -d : -f 2 | cut -d ' ' -f 2)
+		temp=$(echo "$smiOutput" | grep "GPU Current Temp" | cut -d : -f 2 | cut -d ' ' -f 2)
+		echo "temp.value ${temp}"
 		;;
 	mem_fb)
 		totalMemGpus=$(echo "$smiOutput" | grep -v BAR1 | grep -A 3 "Memory Usage" | grep "Total" | cut -d : -f 2 | cut -d ' ' -f 2)
