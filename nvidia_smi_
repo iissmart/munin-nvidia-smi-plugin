@@ -323,8 +323,8 @@ if [ "$1" = "config" ]; then
 			echo "dev_max.info PCIe Device Max of $gpuName"
 			echo "dev_current.info PCIe Device Current of $gpuName"
 			echo "host_max.info PCIe Host Max of $gpuName"
-			echo "link_width_max.info Link Width Max of $gpuName"
-			echo "link_width_current.info Link Width Current of $gpuName"
+			echo "link_max.info Link Width Max of $gpuName"
+			echo "link_current.info Link Width Current of $gpuName"
 			echo "label $gpuName"
 			;;
 		*)
@@ -405,19 +405,25 @@ case $name in
 		pcieGen=$(echo "$smiOutput" | grep -A 8 "PCIe Generation")
 
 		max=$(echo "$pcieGen" | grep "Max" | head -n 1 | cut -d ':' -f 2 | cut -d ' ' -f 2)
-		echo "max.value ${max}"$'\n'
+		echo "max.value ${max}"
 
 		current=$(echo "$pcieGen" | grep "Current" | head -n 1 | cut -d ':' -f 2 | cut -d ' ' -f 2)
-		echo "current.value ${current}"$'\n'
+		echo "current.value ${current}"
 
 		device_current=$(echo "$pcieGen" | grep "Device Current" | cut -d ':' -f 2 | cut -d ' ' -f 2)
-		echo "device_current.value ${device_current}"$'\n'
+		echo "device_current.value ${device_current}"
 
 		device_max=$(echo "$pcieGen" | grep "Device Max" | cut -d ':' -f 2 | cut -d ' ' -f 2)
-		echo "device_max.value ${device_max}"$'\n'
+		echo "device_max.value ${device_max}"
 
 		host_max=$(echo "$pcieGen" | grep "Host Max" | cut -d ':' -f 2 | cut -d ' ' -f 2)
-		echo "host_max.value ${host_max}"$'\n'
+		echo "host_max.value ${host_max}"
+
+		link_max=$(echo "$pcieGen" | grep -A 2 "Link Width" | grep "Max" | cut -d ':' -f 2 | cut -d ' ' -f 2)
+		echo "link_max.value ${link_max}"
+
+		link_current=$(echo "$pcieGen" | grep -A 2 "Link Width" | grep "Current" | cut -d ':' -f 2 | cut -d ' ' -f 2)
+		echo "link_current.value ${link_current}"
 		;;
 	*)
 		echo "Can't run without a proper symlink. Exiting."
