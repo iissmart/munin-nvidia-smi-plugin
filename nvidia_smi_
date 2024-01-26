@@ -316,19 +316,15 @@ if [ "$1" = "config" ]; then
 			echo 'graph_vlabel Generation'
 			echo 'graph_category system'
 			echo "graph_info PCIe Generation of NVIDIA GPUs using driver version $driverVersion"
-			nGpusCounter=0
-			while [ $nGpusCounter -lt "$nGpus" ]
-			do
-				gpuName=$(echo "$nGpusOutput" | sed -n $((nGpusCounter+1))p | cut -d \( -f 1)
-				echo "${name}${nGpusCounter}.max.info PCIe Max of $gpuName"
-				echo "${name}${nGpusCounter}.current.info PCIe Current of $gpuName"
-				echo "${name}${nGpusCounter}.dev_max.info PCIe Device Max of $gpuName"
-				echo "${name}${nGpusCounter}.dev_current.info PCIe Device Current of $gpuName"
-				echo "${name}${nGpusCounter}.host_max.info PCIe Host Max of $gpuName"
-				echo "${name}${nGpusCounter}.link_width_max.info Link Width Max of $gpuName"
-				echo "${name}${nGpusCounter}.link_width_current.info Link Width Current of $gpuName"
-				: $((nGpusCounter=nGpusCounter+1))
-				done
+
+			gpuName=$(echo "$nGpusOutput" | sed -n $((nGpusCounter+1))p | cut -d \( -f 1)
+			echo "max.info PCIe Max of $gpuName"
+			echo "current.info PCIe Current of $gpuName"
+			echo "dev_max.info PCIe Device Max of $gpuName"
+			echo "dev_current.info PCIe Device Current of $gpuName"
+			echo "host_max.info PCIe Host Max of $gpuName"
+			echo "link_width_max.info Link Width Max of $gpuName"
+			echo "link_width_current.info Link Width Current of $gpuName"
 			;;
 		*)
 			echo "Can't run without a proper symlink. Exiting."
@@ -439,13 +435,3 @@ case $name in
 		exit 1
 		;;
 	esac
-
-
-# Print requested value
-nGpusCounter=0
-while [ $nGpusCounter -lt "$nGpus" ]
-do
-	value=$(echo "$valueGpus" | sed -n $((nGpusCounter+1))p)
-	echo "${name}${nGpusCounter}.value $value"
-	: $((nGpusCounter=nGpusCounter+1))
-done
