@@ -325,7 +325,6 @@ if [ "$1" = "config" ]; then
 			echo "host_max.info PCIe Host Max of $gpuName"
 			echo "link_max.info Link Width Max of $gpuName"
 			echo "link_current.info Link Width Current of $gpuName"
-			echo "label $gpuName"
 			;;
 		*)
 			echo "Can't run without a proper symlink. Exiting."
