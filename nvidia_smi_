@@ -51,7 +51,6 @@ klink@numberzero.org
 
         Tx Throughput                     : 0 KB/s
         Rx Throughput                     : 0 KB/s
-    Fan Speed                             : N/A
     Performance State                     : P0
     Clocks Event Reasons
         Idle                              : Not Active
@@ -151,7 +150,6 @@ if [ "$1" = "suggest" ]; then
 	echo "temp"
 	echo "mem_fb"
 	echo "mem_bar"
-	echo "fan"
 	echo "power"
 	echo "utilization"
 	echo "rx"
@@ -209,20 +207,6 @@ if [ "$1" = "config" ]; then
 			# echo 'graph_vlabel MB'
 			# echo 'graph_category memory'
 			# echo "graph_info FB Memory usage for NVIDIA GPUs using driver version $driverVersion"
-			;;
-		fan)
-			echo 'graph_title GPU fan speed'
-			echo 'graph_args -l 0 -u 100'
-			echo 'graph_vlabel %'
-			echo 'graph_category sensors'
-			echo "graph_info Fan speed of NVIDIA GPUs using driver version $driverVersion"
-			nGpusCounter=0
-			while [ $nGpusCounter -lt "$nGpus" ]
-			do
-				gpuName=$(echo "$nGpusOutput" | sed -n $((nGpusCounter+1))p | cut -d \( -f 1)
-				echo "${name}${nGpusCounter}.info Fan information for $gpuName"
-				: $((nGpusCounter=nGpusCounter+1))
-				done
 			;;
 		power)
 			echo 'graph_title GPU power consumption'
@@ -340,9 +324,6 @@ case $name in
 			valueGpus="${valueGpus}${percentMemUsed}"$'\n'
 			: $((nGpusCounter=nGpusCounter+1))
 		done
-		;;
-	fan)
-		valueGpus=$(echo "$smiOutput" | grep "Fan Speed" | cut -d ':' -f 2 | cut -d ' ' -f 2)
 		;;
 	power)
 		valueGpus=$(echo "$smiOutput" | grep "Power Draw" | cut -d ':' -f 2 | cut -d ' ' -f 2)
