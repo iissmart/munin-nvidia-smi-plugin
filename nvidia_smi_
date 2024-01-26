@@ -318,19 +318,26 @@ if [ "$1" = "config" ]; then
 			echo "graph_info PCIe Generation of NVIDIA GPUs using driver version $driverVersion"
 
 			gpuName=$(echo "$nGpusOutput" | sed -n $((nGpusCounter+1))p | cut -d \( -f 1)
-		echo "max.label PCIe Gen Max"
+			
+			echo "max.label PCIe Gen Max"
 			echo "max.info PCIe Max of $gpuName"
-		echo "current.label PCIe Gen Current"
+
+			echo "current.label PCIe Gen Current"
 			echo "current.info PCIe Current of $gpuName"
-		echo "device_current.label PCIe Gen Device Current"
+
+			echo "device_current.label PCIe Gen Device Current"
 			echo "device_current.info PCIe Device Current of $gpuName"
-		echo "device_max.label PCIe Gen Device Max"
+
+			echo "device_max.label PCIe Gen Device Max"
 			echo "device_max.info PCIe Device Max of $gpuName"
-		echo "host_max.label PCIe Gen Host Max"
+
+			echo "host_max.label PCIe Gen Host Max"
 			echo "host_max.info PCIe Host Max of $gpuName"
-		echo "link_max.label PCIe Gen Link Max"
+
+			echo "link_max.label PCIe Gen Link Max"
 			echo "link_max.info Link Width Max of $gpuName"
-		echo "link_current.label PCIe Gen Link Current"
+
+			echo "link_current.label PCIe Gen Link Current"
 			echo "link_current.info Link Width Current of $gpuName"
 			;;
 		*)
