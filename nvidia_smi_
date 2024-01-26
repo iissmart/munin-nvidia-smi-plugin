@@ -325,6 +325,8 @@ if [ "$1" = "config" ]; then
 				echo "${name}${nGpusCounter}.dev_max.info PCIe Device Max of $gpuName"
 				echo "${name}${nGpusCounter}.dev_current.info PCIe Device Current of $gpuName"
 				echo "${name}${nGpusCounter}.host_max.info PCIe Host Max of $gpuName"
+				echo "${name}${nGpusCounter}.link_width_max.info Link Width Max of $gpuName"
+				echo "${name}${nGpusCounter}.link_width_current.info Link Width Current of $gpuName"
 				: $((nGpusCounter=nGpusCounter+1))
 				done
 			;;
@@ -398,6 +400,42 @@ case $name in
 			kiloBitsPerSecond=$(echo "$txGpus" | sed -n $((nGpusCounter+1))p)
 			bitsPerSecond=$((kiloBitsPerSecond*1024))
 			valueGpus="${valueGpus}${bitsPerSecond}"$'\n'
+			: $((nGpusCounter=nGpusCounter+1))
+		done
+		;;
+	ecc)
+		txGpus=$(echo "$smiOutput" | grep "Tx Throughput" | cut -d ':' -f 2 | cut -d ' ' -f 2)
+		valueGpus=''
+		nGpusCounter=0
+		while [ $nGpusCounter -lt "$nGpus" ]
+		do
+			kiloBitsPerSecond=$(echo "$txGpus" | sed -n $((nGpusCounter+1))p)
+			bitsPerSecond=$((kiloBitsPerSecond*1024))
+			valueGpus="${valueGpus}${bitsPerSecond}"$'\n'
+			: $((nGpusCounter=nGpusCounter+1))
+		done
+		;;
+	pcie)
+		pcieGen=$(echo "$smiOutput" | grep -A 8 "PCIe Generation")
+		valueGpus=''
+		nGpusCounter=0
+		while [ $nGpusCounter -lt "$nGpus" ]
+		do
+			max=$(echo "$pcieGen" | grep "Max" | head -n 1 | cut -d ':' -f 2 | cut -d ' ' -f 2)
+			valueGpus="${valueGpus}${max}"$'\n'
+
+			current=$(echo "$pcieGen" | grep "Current" | head -n 1 | cut -d ':' -f 2 | cut -d ' ' -f 2)
+			valueGpus="${valueGpus}${current}"$'\n'
+
+			device_current=$(echo "$pcieGen" | grep "Device Current" | cut -d ':' -f 2 | cut -d ' ' -f 2)
+			valueGpus="${valueGpus}${device_current}"$'\n'
+
+			device_max=$(echo "$pcieGen" | grep "Device Max" | cut -d ':' -f 2 | cut -d ' ' -f 2)
+			valueGpus="${valueGpus}${device_max}"$'\n'
+
+			host_max=$(echo "$pcieGen" | grep "Host Max" | cut -d ':' -f 2 | cut -d ' ' -f 2)
+			valueGpus="${valueGpus}${host_max}"$'\n'
+
 			: $((nGpusCounter=nGpusCounter+1))
 		done
 		;;
