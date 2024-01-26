@@ -419,10 +419,10 @@ case $name in
 		host_max=$(echo "$pcieGen" | grep "Host Max" | cut -d ':' -f 2 | cut -d ' ' -f 2)
 		echo "host_max.value ${host_max}"
 
-		link_max=$(echo "$pcieGen" | grep -A 2 "Link Width" | grep "Max" | cut -d ':' -f 2 | cut -d ' ' -f 2)
+		link_max=$(echo "$pcieGen" | grep -A 2 "Link Width" | grep "Max" | cut -d ':' -f 2 | cut -d ' ' -f 2 | rev | cut -c 2- | rev)
 		echo "link_max.value ${link_max}"
 
-		link_current=$(echo "$pcieGen" | grep -A 2 "Link Width" | grep "Current" | cut -d ':' -f 2 | cut -d ' ' -f 2)
+		link_current=$(echo "$pcieGen" | grep -A 2 "Link Width" | grep "Current" | cut -d ':' -f 2 | cut -d ' ' -f 2 | rev | cut -c 2- | rev)
 		echo "link_current.value ${link_current}"
 		;;
 	*)
