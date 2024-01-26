@@ -227,13 +227,8 @@ if [ "$1" = "config" ]; then
 			echo 'graph_vlabel %'
 			echo 'graph_category system'
 			echo "graph_info GPU utilization of NVIDIA GPUs using driver version $driverVersion"
-			nGpusCounter=0
-			while [ $nGpusCounter -lt "$nGpus" ]
-			do
-				gpuName=$(echo "$nGpusOutput" | sed -n $((nGpusCounter+1))p | cut -d \( -f 1)
-				echo "${name}${nGpusCounter}.info GPU utilization information for $gpuName"
-				: $((nGpusCounter=nGpusCounter+1))
-				done
+
+			echo "utilization.info GPU utilization information for $gpuName"
 			;;
 		rx)
 			echo 'graph_title GPU Rx Throughput'
@@ -329,15 +324,16 @@ case $name in
 		valueGpus=$(echo "$smiOutput" | grep "Power Draw" | cut -d ':' -f 2 | cut -d ' ' -f 2)
 		;;
 	utilization)
-		valueGpus=$(echo "$smiOutput" | grep "Gpu" | cut -d ':' -f 2 | cut -d ' ' -f 2)
+		utilization=$(echo "$smiOutput" | grep "Gpu" | cut -d ':' -f 2 | cut -d ' ' -f 2)
+		echo "utilization.value ${utilization}"
 		;;
 	rx)
-		rxGpus=$(echo "$smiOutput" | grep "Rx Throughput" | cut -d ':' -f 2 | cut -d ' ' -f 2)
-		echo "rx.value ${rxGpus}"
+		rx=$(echo "$smiOutput" | grep "Rx Throughput" | cut -d ':' -f 2 | cut -d ' ' -f 2)
+		echo "rx.value ${rx}"
 		;;
 	tx)
-		txGpus=$(echo "$smiOutput" | grep "Tx Throughput" | cut -d ':' -f 2 | cut -d ' ' -f 2)
-		echo "tx.value ${txGpus}"
+		tx=$(echo "$smiOutput" | grep "Tx Throughput" | cut -d ':' -f 2 | cut -d ' ' -f 2)
+		echo "tx.value ${tx}"
 		;;
 	ecc)
 		txGpus=$(echo "$smiOutput" | grep "Tx Throughput" | cut -d ':' -f 2 | cut -d ' ' -f 2)
