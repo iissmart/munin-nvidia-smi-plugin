@@ -49,7 +49,6 @@ klink@numberzero.org
  #%# family=auto
  #%# capabilities=autoconf suggest
 
-    Performance State                     : P0
     FB Memory Usage
         Total                             : 7680 MiB
         Reserved                          : 73 MiB
@@ -86,19 +85,6 @@ klink@numberzero.org
         SM                                : 885 MHz
         Memory                            : 2999 MHz
         Video                             : 784 MHz
-    Applications Clocks
-        Graphics                          : 885 MHz
-        Memory                            : 3003 MHz
-    Default Applications Clocks
-        Graphics                          : 885 MHz
-        Memory                            : 3003 MHz
-    Max Clocks
-        Graphics                          : 1531 MHz
-        SM                                : 1531 MHz
-        Memory                            : 3003 MHz
-        Video                             : 1379 MHz
-    Max Customer Boost Clocks
-        Graphics                          : 1113 MHz
 
 
 =cut
@@ -131,6 +117,7 @@ if [ "$1" = "suggest" ]; then
 	echo "throughput"
 	echo "ecc"
 	echo "pcie"
+	echo "clocks"
 	exit 0
 fi
 
@@ -270,6 +257,23 @@ if [ "$1" = "config" ]; then
 			echo "perf_state.label GPU Performance State"
 			echo "perf_state.info GPU Performance State of $gpuName"
 			;;
+		clocks)
+			echo 'graph_title GPU Clock Speeds'
+			echo 'graph_category system'
+			echo "graph_info GPU Clock Speeds of NVIDIA GPUs using driver version $driverVersion"
+
+			echo "graphics.label Graphics"
+			echo "graphics.info Graphics Clock Speed of $gpuName"
+
+			echo "sm.label SM"
+			echo "sm.info SM Clock Speed of $gpuName"
+
+			echo "memory.label Memory"
+			echo "memory.info Memory Clock Speed of $gpuName"
+
+			echo "video.label Video"
+			echo "video.info Video Clock Speed of $gpuName"
+			;;
 		*)
 			echo "Can't run without a proper symlink. Exiting."
 			echo "Try running munin-node-configure --suggest."
@@ -361,6 +365,21 @@ case $name in
 
 		perf_state=$(echo "$smiOutput" | grep "Performance State" | cut -d ':' -f 2 | cut -d ' ' -f 2 | cut -c 2)
 		echo "perf_state.value ${perf_state}"
+		;;
+	clocks)
+		clocks=$(echo "$smiOutput" | grep -A 4 "^    Clocks$")
+
+		graphics=$(echo "$clocks" | grep "Graphics" | cut -d ':' -f 2 | cut -d ' ' -f 2)
+		echo "graphics.value ${graphics}"
+
+		sm=$(echo "$clocks" | grep "SM" | cut -d ':' -f 2 | cut -d ' ' -f 2)
+		echo "sm.value ${sm}"
+
+		memory=$(echo "$clocks" | grep "Memory" | cut -d ':' -f 2 | cut -d ' ' -f 2)
+		echo "memory.value ${memory}"
+
+		video=$(echo "$clocks" | grep "Video" | cut -d ':' -f 2 | cut -d ' ' -f 2)
+		echo "video.value ${video}"
 		;;
 	*)
 		echo "Can't run without a proper symlink. Exiting."
