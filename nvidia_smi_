@@ -59,11 +59,6 @@ klink@numberzero.org
         Total                             : 256 MiB
         Used                              : 2 MiB
         Free                              : 254 MiB
-    Utilization
-        Gpu                               : 1 %
-        Memory                            : 0 %
-        Encoder                           : 0 %
-        Decoder                           : 0 %
     Encoder Stats
         Active Sessions                   : 0
         Average FPS                       : 0
@@ -202,13 +197,9 @@ if [ "$1" = "config" ]; then
 			echo 'graph_vlabel Watt'
 			echo 'graph_category sensors'
 			echo "graph_info power consumption of NVIDIA GPUs using driver version $driverVersion"
-			nGpusCounter=0
-			while [ $nGpusCounter -lt "$nGpus" ]
-			do
-				gpuName=$(echo "$nGpusOutput" | sed -n $((nGpusCounter+1))p | cut -d \( -f 1)
-				echo "${name}${nGpusCounter}.info power consumption of $gpuName"
-				: $((nGpusCounter=nGpusCounter+1))
-				done
+
+			echo "power.label Power Consumption"
+			echo "power.info power consumption of $gpuName"
 			;;
 		utilization)
 			echo 'graph_title GPU utilization'
@@ -321,7 +312,8 @@ case $name in
 		done
 		;;
 	power)
-		valueGpus=$(echo "$smiOutput" | grep "Power Draw" | cut -d ':' -f 2 | cut -d ' ' -f 2)
+		power=$(echo "$smiOutput" | grep "Power Draw" | cut -d ':' -f 2 | cut -d ' ' -f 2)
+		echo "power.value ${power}"
 		;;
 	utilization)
 		utilization=$(echo "$smiOutput" | grep -A 4 "Utilization")
