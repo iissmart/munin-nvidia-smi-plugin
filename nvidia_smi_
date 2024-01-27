@@ -181,7 +181,7 @@ if [ "$1" = "config" ]; then
 			;;
 		throughput)
 			echo 'graph_title GPU Throughput'
-			echo 'graph_vlabel KB/sec'
+			echo 'graph_vlabel Bytes/sec'
 			echo 'graph_category gpu'
 			echo "graph_info Throughput of NVIDIA GPUs using driver version $driverVersion"
 
@@ -342,10 +342,12 @@ case $name in
 		;;
 	throughput)
 		rx=$(echo "$smiOutput" | grep "Rx Throughput" | cut -d ':' -f 2 | cut -d ' ' -f 2)
+		rx_bps=$((rx*1024))
+		echo "rx.value ${rx_bps}"
+		
 		tx=$(echo "$smiOutput" | grep "Tx Throughput" | cut -d ':' -f 2 | cut -d ' ' -f 2)
-
-		echo "rx.value ${rx}"
-		echo "tx.value ${tx}"
+		tx_bps=$((tx*1024))
+		echo "tx.value ${tx_bps}"
 		;;
 	ecc)
 		ecc=$(echo "$smiOutput" | grep -A 41 "ECC Errors")
