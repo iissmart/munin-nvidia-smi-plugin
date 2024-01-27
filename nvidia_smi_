@@ -150,16 +150,6 @@ if [ "$1" = "config" ]; then
 			echo "temp.info Temperature information for $gpuName"
 			;;
 		mem_fb)
-			# First determine total memory of each GPU...
-			# gpusTotalMemOutput=$(echo "$smiOutput" | grep -v BAR1 | grep -A 3 "Memory Usage" | grep "Total" | cut -d : -f 2 | tr -d ' ')
-			# nGpusCounter=0
-			# while [ $nGpusCounter -lt "$nGpus" ]
-			# do
-			# 	gpuName=$(echo "$nGpusOutput" | sed -n $((nGpusCounter+1))p | cut -d \( -f 1)
-			# 	echo "${name}${nGpusCounter}.info Memory information for $gpuName"
-			# 	gpuMem=$(echo "$gpusTotalMemOutput"| sed -n $((nGpusCounter+1))p)
-			# done
-			# # ...then output config data.
 			echo 'graph_title GPU FB Memory Usage'
 			# echo 'graph_args -l 0 -u 10240'
 			echo 'graph_vlabel MB'
@@ -179,6 +169,18 @@ if [ "$1" = "config" ]; then
 			echo "free.info Free GPU FB Memory Usage for $gpuName"
 			;;
 		mem_bar)
+			echo 'graph_title GPU BAR1 Memory Usage'
+			echo 'graph_vlabel MB'
+			echo 'graph_category memory'
+			echo "graph_info BAR1 Memory usage for NVIDIA GPUs using driver version $driverVersion"
+
+			echo "used.label Used"
+			echo "used.draw STACK"
+			echo "used.info Used GPU BAR1 Memory Usage for $gpuName"
+
+			echo "free.label Free"
+			echo "free.draw STACK"
+			echo "free.info Free GPU BAR1 Memory Usage for $gpuName"
 			;;
 		power)
 			echo 'graph_title GPU power consumption'
@@ -312,6 +314,13 @@ case $name in
 		echo "free.value ${free}"
 		;;
 	mem_bar)
+		mem_bar=$(echo "$smiOutput" | grep -A 4 "BAR1 Memory Usage")
+
+		used=$(echo "$mem_bar" | grep "Used" | cut -d ':' -f 2 | cut -d ' ' -f 2)
+		echo "used.value ${used}"
+
+		free=$(echo "$mem_bar" | grep "Free" | cut -d ':' -f 2 | cut -d ' ' -f 2)
+		echo "free.value ${free}"
 		;;
 	power)
 		power=$(echo "$smiOutput" | grep -A1 "GPU Power Readings" | grep "Power Draw" | cut -d ':' -f 2 | cut -d ' ' -f 2)
