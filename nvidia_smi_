@@ -81,13 +81,6 @@ klink@numberzero.org
     Retired Pages
         Single Bit ECC                    : 0
         Double Bit ECC                    : 0
-    GPU Power Readings
-        Power Draw                        : 23.40 W
-        Current Power Limit               : 75.00 W
-        Requested Power Limit             : 75.00 W
-        Default Power Limit               : 75.00 W
-        Min Power Limit                   : 60.00 W
-        Max Power Limit                   : 75.00 W
     Clocks
         Graphics                          : 885 MHz
         SM                                : 885 MHz
@@ -135,8 +128,7 @@ if [ "$1" = "suggest" ]; then
 	echo "mem_bar"
 	echo "power"
 	echo "utilization"
-	echo "rx"
-	echo "tx"
+	echo "throughput"
 	echo "ecc"
 	echo "pcie"
 	exit 0
@@ -194,7 +186,7 @@ if [ "$1" = "config" ]; then
 			;;
 		power)
 			echo 'graph_title GPU power consumption'
-			echo 'graph_vlabel Watt'
+			echo 'graph_vlabel Watts'
 			echo 'graph_category sensors'
 			echo "graph_info power consumption of NVIDIA GPUs using driver version $driverVersion"
 
@@ -208,32 +200,26 @@ if [ "$1" = "config" ]; then
 			echo 'graph_category system'
 			echo "graph_info GPU utilization of NVIDIA GPUs using driver version $driverVersion"
 
-			echo "utilization_gpu.label GPU utilization"
+			echo "utilization_gpu.label GPU"
 			echo "utilization_gpu.info GPU utilization information for $gpuName"
 
-			echo "utilization_mem.label Memory utilization"
+			echo "utilization_mem.label Memory"
 			echo "utilization_mem.info Memory utilization information for $gpuName"
 
-			echo "utilization_enc.label Encoder utilization"
+			echo "utilization_enc.label Encoder"
 			echo "utilization_enc.info Encoder utilization information for $gpuName"
 
-			echo "utilization_dec.label Decoder utilization"
+			echo "utilization_dec.label Decoder"
 			echo "utilization_dec.info Decoder utilization information for $gpuName"
 			;;
-		rx)
-			echo 'graph_title GPU Rx Throughput'
+		throughput)
+			echo 'graph_title GPU hroughput'
 			echo 'graph_vlabel KB/sec'
 			echo 'graph_category system'
-			echo "graph_info Rx Throughput of NVIDIA GPUs using driver version $driverVersion"
+			echo "graph_info Throughput of NVIDIA GPUs using driver version $driverVersion"
 
 			echo "rx.label Rx Throughput"
 			echo "rx.info Rx Throughput of $gpuName"
-			;;
-		tx)
-			echo 'graph_title GPU Tx Throughput'
-			echo 'graph_vlabel KB/sec'
-			echo 'graph_category system'
-			echo "graph_info Tx Throughput of NVIDIA GPUs using driver version $driverVersion"
 
 			echo "tx.label Tx Throughput"
 			echo "tx.info Tx Throughput of $gpuName"
@@ -327,12 +313,11 @@ case $name in
 		echo "utilization_enc.value ${utilization_enc}"
 		echo "utilization_dec.value ${utilization_dec}"
 		;;
-	rx)
+	throughput)
 		rx=$(echo "$smiOutput" | grep "Rx Throughput" | cut -d ':' -f 2 | cut -d ' ' -f 2)
-		echo "rx.value ${rx}"
-		;;
-	tx)
 		tx=$(echo "$smiOutput" | grep "Tx Throughput" | cut -d ':' -f 2 | cut -d ' ' -f 2)
+
+		echo "rx.value ${rx}"
 		echo "tx.value ${tx}"
 		;;
 	ecc)
