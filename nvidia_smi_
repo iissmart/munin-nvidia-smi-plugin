@@ -262,7 +262,8 @@ if [ "$1" = "config" ]; then
 			echo "video.info Video Clock Speed of $gpuName"
 			;;
 		enc_stats)
-			echo 'graph_title GPU Encoder Statistics'
+			echo "multigraph enc_stats_fps"
+			echo 'graph_title GPU Encoder Statistics - FPS'
 			echo 'graph_category system'
 			echo "graph_info GPU Encoder Statistics of NVIDIA GPUs using driver version $driverVersion"
 
@@ -271,6 +272,11 @@ if [ "$1" = "config" ]; then
 
 			echo "fps.label Average FPS"
 			echo "fps.info Average FPS of $gpuName"
+
+			echo "multigraph enc_stats_latency"
+			echo 'graph_title GPU Encoder Statistics - Latency'
+			echo 'graph_category system'
+			echo "graph_info GPU Encoder Statistics of NVIDIA GPUs using driver version $driverVersion"
 
 			echo "latency.label Average Latency"
 			echo "latency.info Average Latency of $gpuName"
@@ -406,11 +412,15 @@ case $name in
 	enc_stats)
 		enc_stats=$(echo "$smiOutput" | grep -A 3 "Encoder Stats")
 
+		echo "multigraph enc_stats_fps"
+
 		sessions=$(echo "$enc_stats" | grep "Active Sessions" | cut -d ':' -f 2 | cut -d ' ' -f 2)
 		echo "sessions.value ${sessions}"
 
 		fps=$(echo "$enc_stats" | grep "Average FPS" | cut -d ':' -f 2 | cut -d ' ' -f 2)
 		echo "fps.value ${fps}"
+
+		echo "multigraph enc_stats_latency"
 
 		latency=$(echo "$enc_stats" | grep "Average Latency" | cut -d ':' -f 2 | cut -d ' ' -f 2)
 		echo "latency.value ${latency}"
