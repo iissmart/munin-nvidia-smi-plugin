@@ -157,7 +157,7 @@ if [ "$1" = "config" ]; then
 			echo "graph_info FB Memory usage for NVIDIA GPUs using driver version $driverVersion"
 
 			echo "reserved.label Reserved"
-			echo "reserved.draw STACK"
+			echo "reserved.draw AREA"
 			echo "reserved.info Reserved GPU FB Memory Usage for $gpuName"
 
 			echo "used.label Used"
@@ -175,7 +175,7 @@ if [ "$1" = "config" ]; then
 			echo "graph_info BAR1 Memory usage for NVIDIA GPUs using driver version $driverVersion"
 
 			echo "used.label Used"
-			echo "used.draw STACK"
+			echo "used.draw AREA"
 			echo "used.info Used GPU BAR1 Memory Usage for $gpuName"
 
 			echo "free.label Free"
