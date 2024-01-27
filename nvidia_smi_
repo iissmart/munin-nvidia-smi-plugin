@@ -246,6 +246,7 @@ if [ "$1" = "config" ]; then
 			;;
 		clocks)
 			echo 'graph_title GPU Clock Speeds'
+			echo 'graph_vlabel Hz'
 			echo 'graph_category gpu'
 			echo "graph_info GPU Clock Speeds of NVIDIA GPUs using driver version $driverVersion"
 
@@ -398,16 +399,20 @@ case $name in
 		clocks=$(echo "$smiOutput" | grep -A 4 "^    Clocks$")
 
 		graphics=$(echo "$clocks" | grep "Graphics" | cut -d ':' -f 2 | cut -d ' ' -f 2)
-		echo "graphics.value ${graphics}"
+		graphics_hz=$((graphics*1024*1024))
+		echo "graphics.value ${graphics_hz}"
 
 		sm=$(echo "$clocks" | grep "SM" | cut -d ':' -f 2 | cut -d ' ' -f 2)
-		echo "sm.value ${sm}"
+		sm_hz=$((sm*1024*1024))
+		echo "sm.value ${sm_hz}"
 
 		memory=$(echo "$clocks" | grep "Memory" | cut -d ':' -f 2 | cut -d ' ' -f 2)
-		echo "memory.value ${memory}"
+		memory_hz=$((memory*1024*1024))
+		echo "memory.value ${memory_hz}"
 
 		video=$(echo "$clocks" | grep "Video" | cut -d ':' -f 2 | cut -d ' ' -f 2)
-		echo "video.value ${video}"
+		video_hz=$((video*1024*1024))
+		echo "video.value ${video_hz}"
 		;;
 	enc_stats)
 		enc_stats=$(echo "$smiOutput" | grep -A 3 "Encoder Stats")
