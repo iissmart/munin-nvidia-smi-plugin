@@ -85,31 +85,31 @@ if [ "$1" = "suggest" ]; then
 fi
 
 # Get number of GPUs
-nGpusOutput=$("$nvSmiExec" -L)
-nGpus=$(echo "$nGpusOutput" | wc -l)
+nGpus=$("$nvSmiExec" -L | wc -l)
 if [ "$nGpus" -eq 0 ]; then
-	# Exit if no GPUs found
 	echo "No NVIDIA GPUs detected. Exiting."
 	exit 1
+elif [ "$nGpus" -neq 1 ]; then
+	echo "This plugin only supports one GPU. Exiting."
+	exit 1
 fi
-
-# Get full output from nvidia-smi
-smiOutput=$("$nvSmiExec" -q)
 
 # Check if config was requested
 if [ "$1" = "config" ]; then
 
 	# Get common info
-	driverVersion=$(echo "$smiOutput" | grep "Driver Version" | cut -d : -f 2 | tr -d ' ')
-	gpuName=$(echo "$nGpusOutput" | sed -n $((nGpusCounter+1))p | cut -d '(' -f 1)
+	smiHead=$("$nvSmiExec" -q | head)
+
+	gpuName=$(echo "$smiHead" | grep "Product Name" | cut -d ':' -f 2 | cut -d ' ' -f 2-)
+	driverVersion=$(echo "$smiHead" | grep "Driver Version" | cut -d ':' -f 2 | cut -d ' ' -f 2)
 
 	# Configure graph depending on what which quantity will be plotted
 	case $name in
 		temp)
-			echo 'graph_title GPU temperature'
-			echo 'graph_args -l 0 -u 120'
-			echo 'graph_vlabel degrees Celsius'
-			echo 'graph_category gpu'
+			echo "graph_title GPU temperature"
+			echo "graph_args -l 0 -u 120"
+			echo "graph_vlabel degrees Celsius"
+			echo "graph_category gpu"
 			echo "graph_info Temperature information for NVIDIA GPUs using driver version $driverVersion"
 
 			echo "temp.label Temperature"
@@ -118,10 +118,10 @@ if [ "$1" = "config" ]; then
 			echo "temp.info Temperature information for $gpuName"
 			;;
 		mem_fb)
-			echo 'graph_title GPU FB Memory Usage'
-			echo 'graph_args --base 1024'
-			echo 'graph_vlabel Bytes'
-			echo 'graph_category gpu'
+			echo "graph_title GPU FB Memory Usage"
+			echo "graph_args --base 1024"
+			echo "graph_vlabel Bytes"
+			echo "graph_category gpu"
 			echo "graph_info FB Memory usage for NVIDIA GPUs using driver version $driverVersion"
 
 			echo "reserved.label Reserved"
@@ -137,10 +137,10 @@ if [ "$1" = "config" ]; then
 			echo "free.info Free GPU FB Memory Usage for $gpuName"
 			;;
 		mem_bar)
-			echo 'graph_title GPU BAR1 Memory Usage'
-			echo 'graph_args --base 1024'
-			echo 'graph_vlabel Bytes'
-			echo 'graph_category gpu'
+			echo "graph_title GPU BAR1 Memory Usage"
+			echo "graph_args --base 1024"
+			echo "graph_vlabel Bytes"
+			echo "graph_category gpu"
 			echo "graph_info BAR1 Memory usage for NVIDIA GPUs using driver version $driverVersion"
 
 			echo "used.label Used"
@@ -152,37 +152,37 @@ if [ "$1" = "config" ]; then
 			echo "free.info Free GPU BAR1 Memory Usage for $gpuName"
 			;;
 		power)
-			echo 'graph_title GPU power consumption'
-			echo 'graph_vlabel Watts'
-			echo 'graph_category gpu'
+			echo "graph_title GPU power consumption"
+			echo "graph_vlabel Watts"
+			echo "graph_category gpu"
 			echo "graph_info power consumption of NVIDIA GPUs using driver version $driverVersion"
 
 			echo "power.label Power Consumption"
 			echo "power.info power consumption of $gpuName"
 			;;
 		utilization)
-			echo 'graph_title GPU utilization'
-			echo 'graph_args -l 0 -u 100'
-			echo 'graph_vlabel %'
-			echo 'graph_category gpu'
+			echo "graph_title GPU utilization"
+			echo "graph_args -l 0 -u 100"
+			echo "graph_vlabel %"
+			echo "graph_category gpu"
 			echo "graph_info GPU utilization of NVIDIA GPUs using driver version $driverVersion"
 
-			echo "utilization_gpu.label GPU"
-			echo "utilization_gpu.info GPU utilization information for $gpuName"
+			echo "gpu.label GPU"
+			echo "gpu.info GPU utilization information for $gpuName"
 
-			echo "utilization_mem.label Memory"
-			echo "utilization_mem.info Memory utilization information for $gpuName"
+			echo "memory.label Memory"
+			echo "memory.info Memory utilization information for $gpuName"
 
-			echo "utilization_enc.label Encoder"
-			echo "utilization_enc.info Encoder utilization information for $gpuName"
+			echo "encoder.label Encoder"
+			echo "encoder.info Encoder utilization information for $gpuName"
 
-			echo "utilization_dec.label Decoder"
-			echo "utilization_dec.info Decoder utilization information for $gpuName"
+			echo "decoder.label Decoder"
+			echo "decoder.info Decoder utilization information for $gpuName"
 			;;
 		throughput)
-			echo 'graph_title GPU Throughput'
-			echo 'graph_vlabel Bytes/sec'
-			echo 'graph_category gpu'
+			echo "graph_title GPU Throughput"
+			echo "graph_vlabel Bytes/sec"
+			echo "graph_category gpu"
 			echo "graph_info Throughput of NVIDIA GPUs using driver version $driverVersion"
 
 			echo "rx.label Rx"
@@ -192,8 +192,8 @@ if [ "$1" = "config" ]; then
 			echo "tx.info Tx Throughput of $gpuName"
 			;;
 		ecc)
-			echo 'graph_title GPU ECC Statistics'
-			echo 'graph_category gpu'
+			echo "graph_title GPU ECC Statistics"
+			echo "graph_category gpu"
 			echo "graph_info ECC Statistics of NVIDIA GPUs using driver version $driverVersion"
 
 			echo "volatile_sb.label Volatile Single Bit Errors"
@@ -215,9 +215,8 @@ if [ "$1" = "config" ]; then
 			echo "retired_db.info Retired Double Bit Pages for $gpuName"
 			;;
 		pcie)
-			echo 'graph_title GPU PCIe Statistics'
-			#echo 'graph_vlabel Generation'
-			echo 'graph_category gpu'
+			echo "graph_title GPU PCIe Statistics"
+			echo "graph_category gpu"
 			echo "graph_info PCIe Statistics of NVIDIA GPUs using driver version $driverVersion"
 
 			echo "max.label PCIe Gen Max"
@@ -245,9 +244,9 @@ if [ "$1" = "config" ]; then
 			echo "perf_state.info GPU Performance State of $gpuName"
 			;;
 		clocks)
-			echo 'graph_title GPU Clock Speeds'
-			echo 'graph_vlabel Hz'
-			echo 'graph_category gpu'
+			echo "graph_title GPU Clock Speeds"
+			echo "graph_vlabel Hz"
+			echo "graph_category gpu"
 			echo "graph_info GPU Clock Speeds of NVIDIA GPUs using driver version $driverVersion"
 
 			echo "graphics.label Graphics"
@@ -264,8 +263,8 @@ if [ "$1" = "config" ]; then
 			;;
 		enc_stats)
 			echo "multigraph enc_stats_fps"
-			echo 'graph_title GPU Encoder Statistics - FPS'
-			echo 'graph_category gpu'
+			echo "graph_title GPU Encoder Statistics - FPS"
+			echo "graph_category gpu"
 			echo "graph_info GPU Encoder Statistics of NVIDIA GPUs using driver version $driverVersion"
 
 			echo "sessions.label Active Sessions"
@@ -275,8 +274,8 @@ if [ "$1" = "config" ]; then
 			echo "fps.info Average FPS of $gpuName"
 
 			echo "multigraph enc_stats_latency"
-			echo 'graph_title GPU Encoder Statistics - Latency'
-			echo 'graph_category gpu'
+			echo "graph_title GPU Encoder Statistics - Latency"
+			echo "graph_category gpu"
 			echo "graph_info GPU Encoder Statistics of NVIDIA GPUs using driver version $driverVersion"
 
 			echo "latency.label Average Latency"
@@ -293,6 +292,8 @@ if [ "$1" = "config" ]; then
 fi
 
 # Get requested value
+smiOutput=$("$nvSmiExec" -q)
+
 case $name in
 	temp)
 		temp=$(echo "$smiOutput" | grep "GPU Current Temp" | cut -d : -f 2 | cut -d ' ' -f 2)
@@ -335,10 +336,10 @@ case $name in
 		utilization_enc=$(echo "$utilization" | grep "Encoder" | cut -d ':' -f 2 | cut -d ' ' -f 2)
 		utilization_dec=$(echo "$utilization" | grep "Decoder" | cut -d ':' -f 2 | cut -d ' ' -f 2)
 
-		echo "utilization_gpu.value ${utilization_gpu}"
-		echo "utilization_mem.value ${utilization_mem}"
-		echo "utilization_enc.value ${utilization_enc}"
-		echo "utilization_dec.value ${utilization_dec}"
+		echo "gpu.value ${utilization_gpu}"
+		echo "memory.value ${utilization_mem}"
+		echo "encoder.value ${utilization_enc}"
+		echo "decoder.value ${utilization_dec}"
 		;;
 	throughput)
 		rx=$(echo "$smiOutput" | grep "Rx Throughput" | cut -d ':' -f 2 | cut -d ' ' -f 2)
