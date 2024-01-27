@@ -312,7 +312,7 @@ case $name in
 		done
 		;;
 	power)
-		power=$(echo "$smiOutput" | grep "Power Draw" | cut -d ':' -f 2 | cut -d ' ' -f 2)
+		power=$(echo "$smiOutput" | grep -A1 "GPU Power Readings" | grep "Power Draw" | cut -d ':' -f 2 | cut -d ' ' -f 2)
 		echo "power.value ${power}"
 		;;
 	utilization)
