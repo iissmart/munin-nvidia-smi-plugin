@@ -170,7 +170,8 @@ if [ "$1" = "config" ]; then
 			;;
 		mem_bar)
 			echo 'graph_title GPU BAR1 Memory Usage'
-			echo 'graph_vlabel MB'
+			echo 'graph_args --base 1024'
+			echo 'graph_vlabel Bytes'
 			echo 'graph_category memory'
 			echo "graph_info BAR1 Memory usage for NVIDIA GPUs using driver version $driverVersion"
 
@@ -320,10 +321,12 @@ case $name in
 		mem_bar=$(echo "$smiOutput" | grep -A 4 "BAR1 Memory Usage")
 
 		used=$(echo "$mem_bar" | grep "Used" | cut -d ':' -f 2 | cut -d ' ' -f 2)
-		echo "used.value ${used}"
+		used_bytes=$((used*1024*1024))
+		echo "used.value ${used_bytes}"
 
 		free=$(echo "$mem_bar" | grep "Free" | cut -d ':' -f 2 | cut -d ' ' -f 2)
-		echo "free.value ${free}"
+		free_bytes=$((free*1024*1024))
+		echo "free.value ${free_bytes}"
 		;;
 	power)
 		power=$(echo "$smiOutput" | grep -A1 "GPU Power Readings" | grep "Power Draw" | cut -d ':' -f 2 | cut -d ' ' -f 2)
