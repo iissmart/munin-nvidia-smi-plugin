@@ -89,7 +89,7 @@ nGpus=$("$nvSmiExec" -L | wc -l)
 if [ "$nGpus" -eq 0 ]; then
 	echo "No NVIDIA GPUs detected. Exiting."
 	exit 1
-elif [ "$nGpus" -neq 1 ]; then
+elif [ "$nGpus" -ne 1 ]; then
 	echo "This plugin only supports one GPU. Exiting."
 	exit 1
 fi
