@@ -343,16 +343,16 @@ case $name in
 	ecc)
 		ecc=$(echo "$smiOutput" | grep -A 41 "ECC Errors")
 
-		ecc_vol_sb=$(echo "$ecc" | grep -A 4 "Volatile" | grep -A 1 "Single Bit" | grep "Device Memory" | cut -d ':' -f 2 | cut -d ' ' -f 2)
+		ecc_vol_sb=$(echo "$ecc" | grep -A 18 "Volatile" | grep -A 1 "Single Bit" | grep "Device Memory" | cut -d ':' -f 2 | cut -d ' ' -f 2)
 		echo "volatile_sb.value ${ecc_vol_sb}"
 		
-		ecc_vol_db=$(echo "$ecc" | grep -A 4 "Volatile" | grep -A 1 "Double Bit" | grep "Device Memory" | cut -d ':' -f 2 | cut -d ' ' -f 2)
+		ecc_vol_db=$(echo "$ecc" | grep -A 18 "Volatile" | grep -A 1 "Double Bit" | grep "Device Memory" | cut -d ':' -f 2 | cut -d ' ' -f 2)
 		echo "volatile_db.value ${ecc_vol_db}"
 		
-		ecc_agg_sb=$(echo "$ecc" | grep -A 4 "Aggregate" | grep -A 1 "Single Bit" | grep "Device Memory" | cut -d ':' -f 2 | cut -d ' ' -f 2)
+		ecc_agg_sb=$(echo "$ecc" | grep -A 18 "Aggregate" | grep -A 1 "Single Bit" | grep "Device Memory" | cut -d ':' -f 2 | cut -d ' ' -f 2)
 		echo "aggregate_sb.value ${ecc_agg_sb}"
 		
-		ecc_agg_db=$(echo "$ecc" | grep -A 4 "Aggregate" | grep -A 1 "Double Bit" | grep "Device Memory" | cut -d ':' -f 2 | cut -d ' ' -f 2)
+		ecc_agg_db=$(echo "$ecc" | grep -A 18 "Aggregate" | grep -A 1 "Double Bit" | grep "Device Memory" | cut -d ':' -f 2 | cut -d ' ' -f 2)
 		echo "aggregate_db.value ${ecc_agg_db}"
 		
 		ecc_ret_sb=$(echo "$ecc" | grep -A 2 "Retired Pages" | grep "Single Bit ECC" | cut -d ':' -f 2 | cut -d ' ' -f 2)
