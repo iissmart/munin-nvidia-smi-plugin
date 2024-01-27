@@ -49,20 +49,7 @@ klink@numberzero.org
  #%# family=auto
  #%# capabilities=autoconf suggest
 
-    FB Memory Usage
-        Total                             : 7680 MiB
-        Reserved                          : 73 MiB
-        Used                              : 0 MiB
-        Free                              : 7606 MiB
-    BAR1 Memory Usage
-        Total                             : 256 MiB
-        Used                              : 2 MiB
-        Free                              : 254 MiB
     Encoder Stats
-        Active Sessions                   : 0
-        Average FPS                       : 0
-        Average Latency                   : 0
-    FBC Stats
         Active Sessions                   : 0
         Average FPS                       : 0
         Average Latency                   : 0
@@ -113,6 +100,7 @@ if [ "$1" = "suggest" ]; then
 	echo "ecc"
 	echo "pcie"
 	echo "clocks"
+	echo "enc_stats"
 	exit 0
 fi
 
@@ -286,6 +274,20 @@ if [ "$1" = "config" ]; then
 			echo "video.label Video"
 			echo "video.info Video Clock Speed of $gpuName"
 			;;
+		enc_stats)
+			echo 'graph_title GPU Encoder Statistics'
+			echo 'graph_category system'
+			echo "graph_info GPU Encoder Statistics of NVIDIA GPUs using driver version $driverVersion"
+
+			echo "sessions.label Active Sessions"
+			echo "sessions.info Active Sessions of $gpuName"
+
+			echo "fps.label Average FPS"
+			echo "fps.info Average FPS of $gpuName"
+
+			echo "latency.label Average Latency"
+			echo "latency.info Average Latency of $gpuName"
+			;;
 		*)
 			echo "Can't run without a proper symlink. Exiting."
 			echo "Try running munin-node-configure --suggest."
@@ -404,6 +406,18 @@ case $name in
 
 		video=$(echo "$clocks" | grep "Video" | cut -d ':' -f 2 | cut -d ' ' -f 2)
 		echo "video.value ${video}"
+		;;
+	enc_stats)
+		enc_stats=$(echo "$smiOutput" | grep -A 3 "Encoder Stats")
+
+		sessions=$(echo "$enc_stats" | grep "Active Sessions" | cut -d ':' -f 2 | cut -d ' ' -f 2)
+		echo "sessions.value ${sessions}"
+
+		fps=$(echo "$enc_stats" | grep "Average FPS" | cut -d ':' -f 2 | cut -d ' ' -f 2)
+		echo "fps.value ${fps}"
+
+		latency=$(echo "$enc_stats" | grep "Average Latency" | cut -d ':' -f 2 | cut -d ' ' -f 2)
+		echo "latency.value ${latency}"
 		;;
 	*)
 		echo "Can't run without a proper symlink. Exiting."
