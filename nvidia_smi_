@@ -80,11 +80,6 @@ klink@numberzero.org
     Retired Pages
         Single Bit ECC                    : 0
         Double Bit ECC                    : 0
-    Clocks
-        Graphics                          : 885 MHz
-        SM                                : 885 MHz
-        Memory                            : 2999 MHz
-        Video                             : 784 MHz
 
 
 =cut
@@ -165,11 +160,25 @@ if [ "$1" = "config" ]; then
 			# 	gpuMem=$(echo "$gpusTotalMemOutput"| sed -n $((nGpusCounter+1))p)
 			# done
 			# # ...then output config data.
-			# echo 'graph_title GPU memory usage'
+			echo 'graph_title GPU FB Memory Usage'
 			# echo 'graph_args -l 0 -u 10240'
-			# echo 'graph_vlabel MB'
-			# echo 'graph_category memory'
-			# echo "graph_info FB Memory usage for NVIDIA GPUs using driver version $driverVersion"
+			echo 'graph_vlabel MB'
+			echo 'graph_category memory'
+			echo "graph_info FB Memory usage for NVIDIA GPUs using driver version $driverVersion"
+
+			echo "reserved.label Reserved"
+			echo "reserved.draw STACK"
+			echo "reserved.info Reserved GPU FB Memory Usage for $gpuName"
+
+			echo "used.label Used"
+			echo "used.draw STACK"
+			echo "used.info Used GPU FB Memory Usage for $gpuName"
+
+			echo "free.label Free"
+			echo "free.draw STACK"
+			echo "free.info Free GPU FB Memory Usage for $gpuName"
+			;;
+		mem_bar)
 			;;
 		power)
 			echo 'graph_title GPU power consumption'
@@ -291,18 +300,18 @@ case $name in
 		echo "temp.value ${temp}"
 		;;
 	mem_fb)
-		totalMemGpus=$(echo "$smiOutput" | grep -v BAR1 | grep -A 3 "Memory Usage" | grep "Total" | cut -d : -f 2 | cut -d ' ' -f 2)
-		usedMemGpus=$(echo "$smiOutput" | grep -v BAR1 | grep -A 3 "Memory Usage" | grep "Used" | cut -d : -f 2 | cut -d ' ' -f 2)
-		valueGpus=''
-		nGpusCounter=0
-		while [ $nGpusCounter -lt "$nGpus" ]
-		do
-			totalMemGpu=$(echo "$totalMemGpus" | sed -n $((nGpusCounter+1))p)
-			usedMemGpu=$(echo "$usedMemGpus" | sed -n $((nGpusCounter+1))p)
-			percentMemUsed=$((usedMemGpu*100/totalMemGpu))
-			valueGpus="${valueGpus}${percentMemUsed}"$'\n'
-			: $((nGpusCounter=nGpusCounter+1))
-		done
+		mem_fb=$(echo "$smiOutput" | grep -A 4 "FB Memory Usage")
+
+		reserved=$(echo "$mem_fb" | grep "Reserved" | cut -d ':' -f 2 | cut -d ' ' -f 2)
+		echo "reserved.value ${reserved}"
+
+		used=$(echo "$mem_fb" | grep "Used" | cut -d ':' -f 2 | cut -d ' ' -f 2)
+		echo "used.value ${used}"
+
+		free=$(echo "$mem_fb" | grep "Free" | cut -d ':' -f 2 | cut -d ' ' -f 2)
+		echo "free.value ${free}"
+		;;
+	mem_bar)
 		;;
 	power)
 		power=$(echo "$smiOutput" | grep -A1 "GPU Power Readings" | grep "Power Draw" | cut -d ':' -f 2 | cut -d ' ' -f 2)
