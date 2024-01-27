@@ -49,26 +49,6 @@ klink@numberzero.org
  #%# family=auto
  #%# capabilities=autoconf suggest
 
-    Encoder Stats
-        Active Sessions                   : 0
-        Average FPS                       : 0
-        Average Latency                   : 0
-    ECC Errors
-        Volatile
-            Single Bit
-                Device Memory             : 0
-            Double Bit
-                Device Memory             : 0
-        Aggregate
-            Single Bit
-                Device Memory             : 0
-            Double Bit
-                Device Memory             : 0
-    Retired Pages
-        Single Bit ECC                    : 0
-        Double Bit ECC                    : 0
-
-
 =cut
 
 # Determine name of parameter to monitor
@@ -213,19 +193,26 @@ if [ "$1" = "config" ]; then
 			;;
 		ecc)
 			echo 'graph_title GPU ECC Statistics'
-			echo 'graph_vlabel Errors'
 			echo 'graph_category memory'
 			echo "graph_info ECC Statistics of NVIDIA GPUs using driver version $driverVersion"
-			nGpusCounter=0
-			while [ $nGpusCounter -lt "$nGpus" ]
-			do
-				gpuName=$(echo "$nGpusOutput" | sed -n $((nGpusCounter+1))p | cut -d \( -f 1)
-				echo "${name}${nGpusCounter}.vsb.info Volatile Single Bit ECC Errors of $gpuName"
-				echo "${name}${nGpusCounter}.vdb.info Volatile Double Bit ECC Errors of $gpuName"
-				echo "${name}${nGpusCounter}.asb.info Aggregate Single Bit ECC Errors of $gpuName"
-				echo "${name}${nGpusCounter}.adb.info Aggregate Double Bit ECC Errors of $gpuName"
-				: $((nGpusCounter=nGpusCounter+1))
-				done
+
+			echo "volatile_sb.label Volatile Single Bit Errors"
+			echo "volatile_sb.info Volatile Single Bit Errors for $gpuName"
+
+			echo "volatile_db.label Volatile Double Bit Errors"
+			echo "volatile_db.info Volatile Double Bit Errors for $gpuName"
+
+			echo "aggregate_sb.label Aggregate Single Bit Errors"
+			echo "aggregate_sb.info Aggregate Single Bit Errors for $gpuName"
+
+			echo "aggregate_db.label Aggregate Double Bit Errors"
+			echo "aggregate_db.info Aggregate Double Bit Errors for $gpuName"
+
+			echo "retired_sb.label Retired Single Bit Pages"
+			echo "retired_sb.info Retired Single Bit Pages for $gpuName"
+
+			echo "retired_db.label Retired Double Bit Pages"
+			echo "retired_db.info Retired Double Bit Pages for $gpuName"
 			;;
 		pcie)
 			echo 'graph_title GPU PCIe Statistics'
@@ -354,16 +341,25 @@ case $name in
 		echo "tx.value ${tx}"
 		;;
 	ecc)
-		txGpus=$(echo "$smiOutput" | grep "Tx Throughput" | cut -d ':' -f 2 | cut -d ' ' -f 2)
-		valueGpus=''
-		nGpusCounter=0
-		while [ $nGpusCounter -lt "$nGpus" ]
-		do
-			kiloBitsPerSecond=$(echo "$txGpus" | sed -n $((nGpusCounter+1))p)
-			bitsPerSecond=$((kiloBitsPerSecond*1024))
-			valueGpus="${valueGpus}${bitsPerSecond}"$'\n'
-			: $((nGpusCounter=nGpusCounter+1))
-		done
+		ecc=$(echo "$smiOutput" | grep -A 41 "ECC Errors")
+
+		ecc_vol_sb=$(echo "$ecc" | grep -A 4 "Volatile" | grep -A 1 "Single Bit" | grep "Device Memory" | cut -d ':' -f 2 | cut -d ' ' -f 2)
+		echo "volatile_sb.value ${ecc_vol_sb}"
+		
+		ecc_vol_db=$(echo "$ecc" | grep -A 4 "Volatile" | grep -A 1 "Double Bit" | grep "Device Memory" | cut -d ':' -f 2 | cut -d ' ' -f 2)
+		echo "volatile_db.value ${ecc_vol_db}"
+		
+		ecc_agg_sb=$(echo "$ecc" | grep -A 4 "Aggregate" | grep -A 1 "Single Bit" | grep "Device Memory" | cut -d ':' -f 2 | cut -d ' ' -f 2)
+		echo "aggregate_sb.value ${ecc_agg_sb}"
+		
+		ecc_agg_db=$(echo "$ecc" | grep -A 4 "Aggregate" | grep -A 1 "Double Bit" | grep "Device Memory" | cut -d ':' -f 2 | cut -d ' ' -f 2)
+		echo "aggregate_db.value ${ecc_agg_db}"
+		
+		ecc_ret_sb=$(echo "$ecc" | grep -A 2 "Retired Pages" | grep "Single Bit ECC" | cut -d ':' -f 2 | cut -d ' ' -f 2)
+		echo "retired_sb.value ${ecc_ret_sb}"
+		
+		ecc_ret_db=$(echo "$ecc" | grep -A 2 "Retired Pages" | grep "Double Bit ECC" | cut -d ':' -f 2 | cut -d ' ' -f 2)
+		echo "retired_db.value ${ecc_ret_db}"
 		;;
 	pcie)
 		pcieGen=$(echo "$smiOutput" | grep -A 8 "PCIe Generation")
