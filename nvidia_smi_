@@ -49,19 +49,7 @@ klink@numberzero.org
  #%# family=auto
  #%# capabilities=autoconf suggest
 
-        Tx Throughput                     : 0 KB/s
-        Rx Throughput                     : 0 KB/s
     Performance State                     : P0
-    Clocks Event Reasons
-        Idle                              : Not Active
-        Applications Clocks Setting       : Not Active
-        SW Power Cap                      : Not Active
-        HW Slowdown                       : Not Active
-            HW Thermal Slowdown           : Not Active
-            HW Power Brake Slowdown       : Not Active
-        Sync Boost                        : Not Active
-        SW Thermal Slowdown               : Not Active
-        Display Clock Setting             : Not Active
     FB Memory Usage
         Total                             : 7680 MiB
         Reserved                          : 73 MiB
@@ -229,7 +217,17 @@ if [ "$1" = "config" ]; then
 			echo 'graph_category system'
 			echo "graph_info GPU utilization of NVIDIA GPUs using driver version $driverVersion"
 
-			echo "utilization.info GPU utilization information for $gpuName"
+			echo "utilization.gpu.label GPU utilization"
+			echo "utilization.gpu.info GPU utilization information for $gpuName"
+
+			echo "utilization.mem.label Memory utilization"
+			echo "utilization.mem.info Memory utilization information for $gpuName"
+
+			echo "utilization.enc.label Encoder utilization"
+			echo "utilization.enc.info Encoder utilization information for $gpuName"
+
+			echo "utilization.dec.label Decoder utilization"
+			echo "utilization.dec.info Decoder utilization information for $gpuName"
 			;;
 		rx)
 			echo 'graph_title GPU Rx Throughput'
@@ -326,8 +324,16 @@ case $name in
 		valueGpus=$(echo "$smiOutput" | grep "Power Draw" | cut -d ':' -f 2 | cut -d ' ' -f 2)
 		;;
 	utilization)
-		utilization=$(echo "$smiOutput" | grep "Gpu" | cut -d ':' -f 2 | cut -d ' ' -f 2)
-		echo "utilization.value ${utilization}"
+		utilization=$(echo "$smiOutput" | grep -A 4 "Utilization")
+		utilization_gpu=$(echo "$utilization" | grep "Gpu" | cut -d ':' -f 2 | cut -d ' ' -f 2)
+		utilization_mem=$(echo "$utilization" | grep "Memory" | cut -d ':' -f 2 | cut -d ' ' -f 2)
+		utilization_enc=$(echo "$utilization" | grep "Encoder" | cut -d ':' -f 2 | cut -d ' ' -f 2)
+		utilization_dec=$(echo "$utilization" | grep "Decoder" | cut -d ':' -f 2 | cut -d ' ' -f 2)
+
+		echo "utilization.gpu.value ${utilization_gpu}"
+		echo "utilization.mem.value ${utilization_mem}"
+		echo "utilization.enc.value ${utilization_enc}"
+		echo "utilization.dec.value ${utilization_dec}"
 		;;
 	rx)
 		rx=$(echo "$smiOutput" | grep "Rx Throughput" | cut -d ':' -f 2 | cut -d ' ' -f 2)
