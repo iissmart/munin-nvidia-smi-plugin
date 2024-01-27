@@ -208,17 +208,17 @@ if [ "$1" = "config" ]; then
 			echo 'graph_category system'
 			echo "graph_info GPU utilization of NVIDIA GPUs using driver version $driverVersion"
 
-			echo "utilization.gpu.label GPU utilization"
-			echo "utilization.gpu.info GPU utilization information for $gpuName"
+			echo "utilization_gpu.label GPU utilization"
+			echo "utilization_gpu.info GPU utilization information for $gpuName"
 
-			echo "utilization.mem.label Memory utilization"
-			echo "utilization.mem.info Memory utilization information for $gpuName"
+			echo "utilization_mem.label Memory utilization"
+			echo "utilization_mem.info Memory utilization information for $gpuName"
 
-			echo "utilization.enc.label Encoder utilization"
-			echo "utilization.enc.info Encoder utilization information for $gpuName"
+			echo "utilization_enc.label Encoder utilization"
+			echo "utilization_enc.info Encoder utilization information for $gpuName"
 
-			echo "utilization.dec.label Decoder utilization"
-			echo "utilization.dec.info Decoder utilization information for $gpuName"
+			echo "utilization_dec.label Decoder utilization"
+			echo "utilization_dec.info Decoder utilization information for $gpuName"
 			;;
 		rx)
 			echo 'graph_title GPU Rx Throughput'
@@ -322,10 +322,10 @@ case $name in
 		utilization_enc=$(echo "$utilization" | grep "Encoder" | cut -d ':' -f 2 | cut -d ' ' -f 2)
 		utilization_dec=$(echo "$utilization" | grep "Decoder" | cut -d ':' -f 2 | cut -d ' ' -f 2)
 
-		echo "utilization.gpu.value ${utilization_gpu}"
-		echo "utilization.mem.value ${utilization_mem}"
-		echo "utilization.enc.value ${utilization_enc}"
-		echo "utilization.dec.value ${utilization_dec}"
+		echo "utilization_gpu.value ${utilization_gpu}"
+		echo "utilization_mem.value ${utilization_mem}"
+		echo "utilization_enc.value ${utilization_enc}"
+		echo "utilization_dec.value ${utilization_dec}"
 		;;
 	rx)
 		rx=$(echo "$smiOutput" | grep "Rx Throughput" | cut -d ':' -f 2 | cut -d ' ' -f 2)
